@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Tetris Hunt</title>
+    <style>
+        :root {
+            --color-white: rgba(255, 255, 255, 1);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-red-400: rgba(255, 84, 89, 1);
+            --color-orange-400: rgba(230, 129, 97, 1);
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-primary: var(--color-teal-500);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--color-background);
+            color: var(--color-text);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                max-width: 350px;
+                margin: 20px auto 0;
+            }
+        }
+
+        h1 {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin: 0 0 20px 0;
+            font-size: 28px;
+            background: linear-gradient(135deg, var(--color-teal-500), var(--color-teal-300));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .game-board {
+            background: var(--color-surface);
+            border: 3px solid var(--color-slate-500);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        canvas {
+            display: block;
+            background: #222;
+            width: 100%;
+            height: auto;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 200ms ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+            grid-column: 1 / -1;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--color-teal-600);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--color-gray-200);
+            color: var(--color-text);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--color-gray-300);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel {
+            background: var(--color-surface);
+            border: 2px solid var(--color-primary);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .panel-title {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--color-primary);
+            margin: 0 0 15px 0;
+            letter-spacing: 1px;
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .stat-label {
+            color: var(--color-slate-500);
+        }
+
+        .stat-value {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--color-text);
+        }
+
+        .energy-bar {
+            width: 100%;
+            height: 24px;
+            background: var(--color-gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .energy-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-teal-500), var(--color-teal-300));
+            width: 0%;
+            transition: width 300ms ease;
+        }
+
+        .energy-bar.low .energy-bar-fill {
+            background: linear-gradient(90deg, var(--color-red-400), var(--color-orange-400));
+        }
+
+        .treasure-code {
+            background: linear-gradient(135deg, rgba(50, 184, 198, 0.1), rgba(33, 128, 141, 0.1));
+            border: 2px dashed var(--color-primary);
+            border-radius: 6px;
+            padding: 16px;
+            text-align: center;
+            display: none;
+        }
+
+        .treasure-code.visible {
+            display: block;
+        }
+
+        .treasure-code-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--color-slate-500);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .treasure-code-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-primary);
+            font-family: monospace;
+            word-break: break-all;
+        }
+
+        .instructions {
+            background: rgba(50, 184, 198, 0.05);
+            border-left: 4px solid var(--color-primary);
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--color-slate-500);
+        }
+
+        .instructions strong {
+            color: var(--color-text);
+        }
+
+        .next-piece {
+            background: #222;
+            border: 2px solid var(--color-gray-300);
+            border-radius: 4px;
+            width: 100%;
+            height: 80px;
+            margin-top: 8px;
+        }
+
+        .level-progress {
+            margin-top: 12px;
+        }
+
+        .level-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--color-gray-200);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .level-bar-fill {
+            height: 100%;
+            background: var(--color-primary);
+            width: 0%;
+            transition: width 200ms ease;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-background: var(--color-charcoal-700);
+                --color-surface: var(--color-charcoal-800);
+                --color-text: var(--color-gray-200);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ Energy Tetris Hunt</h1>
+
+        <div class="game-area">
+            <div class="game-board">
+                <canvas id="tetrisCanvas" width="300" height="600"></canvas>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" id="startBtn" onclick="toggleGame()">Start Game</button>
+                <button class="btn btn-secondary" id="pauseBtn" onclick="togglePause()" disabled>Pause</button>
+                <button class="btn btn-secondary" onclick="resetGame()">Reset</button>
+            </div>
+
+            <div class="instructions">
+                <strong>Controls:</strong><br>
+                ← → Move | ↓ Drop | Space Rotate<br>
+                <strong>Challenge:</strong> Reach 5000+ points to unlock the treasure code!
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="panel">
+                <div class="panel-title">📊 Score Board</div>
+                <div class="stat">
+                    <span class="stat-label">Score</span>
+                    <span class="stat-value" id="scoreDisplay">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Level</span>
+                    <span class="stat-value" id="levelDisplay">1</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Lines</span>
+                    <span class="stat-value" id="linesDisplay">0</span>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title">⚡ Energy Meter</div>
+                <div class="stat">
+                    <span class="stat-label">Energy</span>
+                    <span class="stat-value" id="energyDisplay">100%</span>
+                </div>
+                <div class="energy-bar" id="energyBar">
+                    <div class="energy-bar-fill" id="energyBarFill" style="width: 100%;"></div>
+                </div>
+                <div class="stat" style="margin-top: 12px; font-size: 12px;">
+                    <span class="stat-label">Power Multiplier</span>
+                    <span class="stat-value" id="multiplierDisplay">1x</span>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title">📦 Next Piece</div>
+                <canvas id="nextCanvas" class="next-piece"></canvas>
+            </div>
+
+            <div class="treasure-code" id="treasureCode">
+                <div class="treasure-code-label">🎯 Treasure Code Unlocked!</div>
+                <div class="treasure-code-value" id="treasureCodeValue">-</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game constants
+        const GRID_WIDTH = 10;
+        const GRID_HEIGHT = 20;
+        const BLOCK_SIZE = 30;
+        const ENERGY_THRESHOLD = 5000;
+        const ENERGY_LOSS_PER_FRAME = 0.1;
+
+        // Canvas setup
+        const canvas = document.getElementById('tetrisCanvas');
+        const ctx = canvas.getContext('2d');
+        const nextCanvas = document.getElementById('nextCanvas');
+        const nextCtx = nextCanvas.getContext('2d');
+
+        // Game state
+        let gameRunning = false;
+        let gamePaused = false;
+        let score = 0;
+        let lines = 0;
+        let level = 1;
+        let energy = 100;
+        let gameGrid = Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(0));
+
+        // Piece shapes (tetrominoes)
+        const SHAPES = [
+            [[1, 1, 1, 1]], // I
+            [[1, 1], [1, 1]], // O
+            [[0, 1, 1], [1, 1, 0]], // S
+            [[1, 1, 0], [0, 1, 1]], // Z
+            [[1, 0, 0], [1, 1, 1]], // J
+            [[0, 0, 1], [1, 1, 1]], // L
+            [[0, 1, 0], [1, 1, 1]] // T
+        ];
+
+        const COLORS = [
+            '#FF6B6B', // Red - I
+            '#4ECDC4', // Teal - O
+            '#45B7D1', // Blue - S
+            '#96CEB4', // Green - Z
+            '#FFEAA7', // Yellow - J
+            '#DDA15E', // Orange - L
+            '#BC6C25'  // Brown - T
+        ];
+
+        let currentPiece = null;
+        let nextPiece = null;
+
+        // Treasure code generation (based on score)
+        function generateTreasureCode() {
+            const words = ['PHOENIX', 'VAULT', 'ENERGY', 'TRADER', 'QUEST', 'LEGEND', 'STORM', 'BEACON'];
+            const numbers = Math.floor(score / 100).toString().padStart(4, '0');
+            const randomWord = words[Math.floor(Math.random() * words.length)];
+            return `${randomWord}-${numbers}`;
+        }
+
+        // Piece class
+        class Tetromino {
+            constructor(shape = null, color = null) {
+                const index = shape ? SHAPES.indexOf(shape) : Math.floor(Math.random() * SHAPES.length);
+                this.shape = shape || SHAPES[index];
+                this.color = color || COLORS[index];
+                this.x = Math.floor(GRID_WIDTH / 2) - 1;
+                this.y = 0;
+                this.rotation = 0;
+            }
+
+            rotate() {
+                const rotated = this.shape[0].map((_, i) =>
+                    this.shape.map(row => row[i]).reverse()
+                );
+                this.shape = rotated;
+            }
+
+            move(dx, dy) {
+                this.x += dx;
+                this.y += dy;
+            }
+        }
+
+        function spawnPiece() {
+            if (!nextPiece) {
+                nextPiece = new Tetromino();
+            }
+            currentPiece = nextPiece;
+            nextPiece = new Tetromino();
+            currentPiece.x = Math.floor(GRID_WIDTH / 2) - 1;
+            currentPiece.y = 0;
+            drawNextPiece();
+        }
+
+        function isColliding(piece, offsetX = 0, offsetY = 0) {
+            for (let row = 0; row < piece.shape.length; row++) {
+                for (let col = 0; col < piece.shape[row].length; col++) {
+                    if (piece.shape[row][col] === 0) continue;
+
+                    const newX = piece.x + col + offsetX;
+                    const newY = piece.y + row + offsetY;
+
+                    if (newX < 0 || newX >= GRID_WIDTH || newY >= GRID_HEIGHT) {
+                        return true;
+                    }
+                    if (newY >= 0 && gameGrid[newY][newX] !== 0) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        function mergePiece() {
+            for (let row = 0; row < currentPiece.shape.length; row++) {
+                for (let col = 0; col < currentPiece.shape[row].length; col++) {
+                    if (currentPiece.shape[row][col] === 1) {
+                        const y = currentPiece.y + row;
+                        const x = currentPiece.x + col;
+                        if (y >= 0 && y < GRID_HEIGHT && x >= 0 && x < GRID_WIDTH) {
+                            gameGrid[y][x] = currentPiece.color;
+                        }
+                    }
+                }
+            }
+        }
+
+        function clearLines() {
+            let clearedLines = 0;
+            for (let row = GRID_HEIGHT - 1; row >= 0; row--) {
+                if (gameGrid[row].every(cell => cell !== 0)) {
+                    gameGrid.splice(row, 1);
+                    gameGrid.unshift(Array(GRID_WIDTH).fill(0));
+                    clearedLines++;
+                    row++;
+                }
+            }
+
+            if (clearedLines > 0) {
+                lines += clearedLines;
+                // Energy trading mechanic: cleared lines give energy bonus
+                energy = Math.min(100, energy + clearedLines * 5);
+                // Score multiplier based on energy
+                const multiplier = Math.floor(energy / 20);
+                score += (clearedLines * 100) * multiplier;
+                checkLevelUp();
+            }
+
+            return clearedLines > 0;
+        }
+
+        function checkLevelUp() {
+            const newLevel = Math.floor(score / 1000) + 1;
+            if (newLevel > level) {
+                level = newLevel;
+            }
+        }
+
+        function draw() {
+            // Clear canvas
+            ctx.fillStyle = '#222';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw grid
+            ctx.strokeStyle = '#444';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= GRID_HEIGHT; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, i * BLOCK_SIZE);
+                ctx.lineTo(GRID_WIDTH * BLOCK_SIZE, i * BLOCK_SIZE);
+                ctx.stroke();
+            }
+            for (let i = 0; i <= GRID_WIDTH; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * BLOCK_SIZE, 0);
+                ctx.lineTo(i * BLOCK_SIZE, GRID_HEIGHT * BLOCK_SIZE);
+                ctx.stroke();
+            }
+
+            // Draw placed blocks
+            for (let row = 0; row < GRID_HEIGHT; row++) {
+                for (let col = 0; col < GRID_WIDTH; col++) {
+                    if (gameGrid[row][col] !== 0) {
+                        ctx.fillStyle = gameGrid[row][col];
+                        ctx.fillRect(col * BLOCK_SIZE, row * BLOCK_SIZE, BLOCK_SIZE - 1, BLOCK_SIZE - 1);
+                    }
+                }
+            }
+
+            // Draw current piece
+            if (currentPiece) {
+                ctx.fillStyle = currentPiece.color;
+                for (let row = 0; row < currentPiece.shape.length; row++) {
+                    for (let col = 0; col < currentPiece.shape[row].length; col++) {
+                        if (currentPiece.shape[row][col] === 1) {
+                            const x = (currentPiece.x + col) * BLOCK_SIZE;
+                            const y = (currentPiece.y + row) * BLOCK_SIZE;
+                            ctx.fillRect(x, y, BLOCK_SIZE - 1, BLOCK_SIZE - 1);
+                        }
+                    }
+                }
+            }
+
+            updateUI();
+        }
+
+        function drawNextPiece() {
+            nextCtx.fillStyle = '#222';
+            nextCtx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
+            
+            if (nextPiece) {
+                nextCtx.fillStyle = nextPiece.color;
+                const offsetX = (nextCanvas.width / 30 - nextPiece.shape[0].length) / 2;
+                const offsetY = (nextCanvas.height / 30 - nextPiece.shape.length) / 2;
+                
+                for (let row = 0; row < nextPiece.shape.length; row++) {
+                    for (let col = 0; col < nextPiece.shape[row].length; col++) {
+                        if (nextPiece.shape[row][col] === 1) {
+                            const x = (offsetX + col) * 30;
+                            const y = (offsetY + row) * 30;
+                            nextCtx.fillRect(x, y, 28, 28);
+                        }
+                    }
+                }
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('scoreDisplay').textContent = score.toLocaleString();
+            document.getElementById('levelDisplay').textContent = level;
+            document.getElementById('linesDisplay').textContent = lines;
+            
+            energy = Math.max(0, energy - ENERGY_LOSS_PER_FRAME);
+            document.getElementById('energyDisplay').textContent = Math.round(energy) + '%';
+            document.getElementById('energyBarFill').style.width = energy + '%';
+            
+            const energyBar = document.getElementById('energyBar');
+            if (energy < 30) {
+                energyBar.classList.add('low');
+            } else {
+                energyBar.classList.remove('low');
+            }
+
+            const multiplier = Math.floor(energy / 20);
+            document.getElementById('multiplierDisplay').textContent = multiplier + 'x';
+
+            // Check treasure code unlock
+            if (score >= ENERGY_THRESHOLD && !document.getElementById('treasureCode').classList.contains('visible')) {
+                document.getElementById('treasureCode').classList.add('visible');
+                document.getElementById('treasureCodeValue').textContent = generateTreasureCode();
+            }
+        }
+
+        function gameLoop() {
+            if (!gameRunning) return;
+
+            if (!gamePaused) {
+                if (!currentPiece) {
+                    spawnPiece();
+                }
+
+                if (!isColliding(currentPiece, 0, 1)) {
+                    currentPiece.y++;
+                } else {
+                    mergePiece();
+                    if (clearLines()) {
+                        // Energy trading bonus for combos
+                    }
+                    spawnPiece();
+
+                    // Check game over
+                    if (isColliding(currentPiece, 0, 0)) {
+                        gameRunning = false;
+                        document.getElementById('startBtn').textContent = 'Game Over - Restart';
+                        document.getElementById('pauseBtn').disabled = true;
+                    }
+                }
+            }
+
+            draw();
+            setTimeout(gameLoop, Math.max(100, 500 - (level - 1) * 30));
+        }
+
+        function toggleGame() {
+            if (!gameRunning) {
+                gameRunning = true;
+                gamePaused = false;
+                document.getElementById('startBtn').textContent = 'Playing...';
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('pauseBtn').disabled = false;
+                gameLoop();
+            }
+        }
+
+        function togglePause() {
+            if (gameRunning) {
+                gamePaused = !gamePaused;
+                document.getElementById('pauseBtn').textContent = gamePaused ? 'Resume' : 'Pause';
+            }
+        }
+
+        function resetGame() {
+            gameRunning = false;
+            gamePaused = false;
+            score = 0;
+            lines = 0;
+            level = 1;
+            energy = 100;
+            gameGrid = Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(0));
+            currentPiece = null;
+            nextPiece = null;
+            document.getElementById('startBtn').textContent = 'Start Game';
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('pauseBtn').textContent = 'Pause';
+            document.getElementById('pauseBtn').disabled = true;
+            document.getElementById('treasureCode').classList.remove('visible');
+            draw();
+        }
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (!gameRunning || gamePaused || !currentPiece) return;
+
+            switch (e.key) {
+                case 'ArrowLeft':
+                    if (!isColliding(currentPiece, -1, 0)) {
+                        currentPiece.x--;
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (!isColliding(currentPiece, 1, 0)) {
+                        currentPiece.x++;
+                    }
+                    break;
+                case 'ArrowDown':
+                    if (!isColliding(currentPiece, 0, 1)) {
+                        currentPiece.y++;
+                        score += 10;
+                    }
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    currentPiece.rotate();
+                    if (isColliding(currentPiece, 0, 0)) {
+                        currentPiece.rotate();
+                        currentPiece.rotate();
+                        currentPiece.rotate();
+                    }
+                    break;
+            }
+            draw();
+        });
+
+        // Initial draw
+        draw();
+    </script>
+</body>
+</html>
