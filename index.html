@@ -2,693 +2,512 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Energy Tetris Hunt</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Tetris - Mobile &amp; Desktop</title>
     <style>
         :root {
-            --color-white: rgba(255, 255, 255, 1);
-            --color-cream-50: rgba(252, 252, 249, 1);
-            --color-cream-100: rgba(255, 255, 253, 1);
-            --color-gray-200: rgba(245, 245, 245, 1);
-            --color-gray-300: rgba(167, 169, 169, 1);
-            --color-slate-500: rgba(98, 108, 113, 1);
-            --color-slate-900: rgba(19, 52, 59, 1);
-            --color-teal-300: rgba(50, 184, 198, 1);
-            --color-teal-500: rgba(33, 128, 141, 1);
-            --color-teal-600: rgba(29, 116, 128, 1);
-            --color-red-400: rgba(255, 84, 89, 1);
-            --color-orange-400: rgba(230, 129, 97, 1);
-            --color-background: var(--color-cream-50);
-            --color-surface: var(--color-cream-100);
-            --color-text: var(--color-slate-900);
-            --color-primary: var(--color-teal-500);
-        }
+  /* Primitive Color Tokens */
+  --color-white: rgba(255, 255, 255, 1);
+  --color-black: rgba(0, 0, 0, 1);
+  --color-cream-50: rgba(252, 252, 249, 1);
+  --color-cream-100: rgba(255, 255, 253, 1);
+  --color-gray-200: rgba(245, 245, 245, 1);
+  --color-gray-300: rgba(167, 169, 169, 1);
+  --color-gray-400: rgba(119, 124, 124, 1);
+  --color-slate-500: rgba(98, 108, 113, 1);
+  --color-brown-600: rgba(94, 82, 64, 1);
+  --color-charcoal-700: rgba(31, 33, 33, 1);
+  --color-charcoal-800: rgba(38, 40, 40, 1);
+  --color-slate-900: rgba(19, 52, 59, 1);
+  --color-teal-300: rgba(50, 184, 198, 1);
+  --color-teal-400: rgba(45, 166, 178, 1);
+  --color-teal-500: rgba(33, 128, 141, 1);
+  --color-teal-600: rgba(29, 116, 128, 1);
+  --color-teal-700: rgba(26, 104, 115, 1);
+  --color-teal-800: rgba(41, 150, 161, 1);
+  --color-red-400: rgba(255, 84, 89, 1);
+  --color-red-500: rgba(192, 21, 47, 1);
+  --color-orange-400: rgba(230, 129, 97, 1);
+  --color-orange-500: rgba(168, 75, 47, 1);
 
-        * {
-            box-sizing: border-box;
-        }
+  /* RGB versions for opacity control */
+  --color-brown-600-rgb: 94, 82, 64;
+  --color-teal-500-rgb: 33, 128, 141;
+  --color-slate-900-rgb: 19, 52, 59;
+  --color-slate-500-rgb: 98, 108, 113;
+  --color-red-500-rgb: 192, 21, 47;
+  --color-red-400-rgb: 255, 84, 89;
+  --color-orange-500-rgb: 168, 75, 47;
+  --color-orange-400-rgb: 230, 129, 97;
 
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--color-background);
-            color: var(--color-text);
-            min-height: 100vh;
-        }
+  /* Background color tokens (Light Mode) */
+  --color-bg-1: rgba(59, 130, 246, 0.08);
+  --color-bg-2: rgba(245, 158, 11, 0.08);
+  --color-bg-3: rgba(34, 197, 94, 0.08);
+  --color-bg-4: rgba(239, 68, 68, 0.08);
+  --color-bg-5: rgba(147, 51, 234, 0.08);
+  --color-bg-6: rgba(249, 115, 22, 0.08);
+  --color-bg-7: rgba(236, 72, 153, 0.08);
+  --color-bg-8: rgba(6, 182, 212, 0.08);
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 30px;
-        }
+  /* Semantic Color Tokens (Light Mode) */
+  --color-background: var(--color-cream-50);
+  --color-surface: var(--color-cream-100);
+  --color-text: var(--color-slate-900);
+  --color-text-secondary: var(--color-slate-500);
+  --color-primary: var(--color-teal-500);
+  --color-primary-hover: var(--color-teal-600);
+  --color-primary-active: var(--color-teal-700);
+  --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+  --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
+  --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+  --color-btn-primary-text: var(--color-cream-50);
+  --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-error: var(--color-red-500);
+  --color-success: var(--color-teal-500);
+  --color-warning: var(--color-orange-500);
+  --color-info: var(--color-slate-500);
+  --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+  --color-select-caret: rgba(var(--color-slate-900-rgb), 0.8);
 
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-            
-            .sidebar {
-                max-width: 350px;
-                margin: 20px auto 0;
-            }
-        }
+  /* Common style patterns */
+  --focus-ring: 0 0 0 3px var(--color-focus-ring);
+  --focus-outline: 2px solid var(--color-primary);
+  --status-bg-opacity: 0.15;
+  --status-border-opacity: 0.25;
 
-        h1 {
-            grid-column: 1 / -1;
-            text-align: center;
-            margin: 0 0 20px 0;
-            font-size: 28px;
-            background: linear-gradient(135deg, var(--color-teal-500), var(--color-teal-300));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+  /* Typography */
+  --font-family-base: "FKGroteskNeue", "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+  --font-size-4xl: 30px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 550;
+  --font-weight-bold: 600;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --letter-spacing-tight: -0.01em;
 
-        .game-area {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+  /* Spacing */
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
 
-        .game-board {
-            background: var(--color-surface);
-            border: 3px solid var(--color-slate-500);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-base: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
 
-        canvas {
-            display: block;
-            background: #222;
-            width: 100%;
-            height: auto;
-        }
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+}
 
-        .controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-gray-400-rgb: 119, 124, 124;
+    --color-teal-300-rgb: 50, 184, 198;
+    --color-gray-300-rgb: 167, 169, 169;
+    --color-gray-200-rgb: 245, 245, 245;
 
-        .btn {
-            padding: 12px 16px;
-            font-size: 14px;
-            font-weight: 500;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 200ms ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+    --color-bg-1: rgba(29, 78, 216, 0.15);
+    --color-bg-2: rgba(180, 83, 9, 0.15);
+    --color-bg-3: rgba(21, 128, 61, 0.15);
+    --color-bg-4: rgba(185, 28, 28, 0.15);
+    --color-bg-5: rgba(107, 33, 168, 0.15);
+    --color-bg-6: rgba(194, 65, 12, 0.15);
+    --color-bg-7: rgba(190, 24, 93, 0.15);
+    --color-bg-8: rgba(8, 145, 178, 0.15);
 
-        .btn-primary {
-            background: var(--color-primary);
-            color: white;
-            grid-column: 1 / -1;
-        }
+    --color-background: var(--color-charcoal-700);
+    --color-surface: var(--color-charcoal-800);
+    --color-text: var(--color-gray-200);
+    --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+    --color-primary: var(--color-teal-300);
+    --color-primary-hover: var(--color-teal-400);
+    --color-primary-active: var(--color-teal-800);
+    --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+    --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+    --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
+    --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+    --color-error: var(--color-red-400);
+    --color-success: var(--color-teal-300);
+    --color-warning: var(--color-orange-400);
+    --color-info: var(--color-gray-300);
+    --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+    --color-btn-primary-text: var(--color-slate-900);
+    --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+    --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
+  }
+}
 
-        .btn-primary:hover:not(:disabled) {
-            background: var(--color-teal-600);
-            transform: translateY(-2px);
-        }
+@font-face {
+  font-family: 'FKGroteskNeue';
+  src: url('https://r2cdn.perplexity.ai/fonts/FKGroteskNeue.woff2') format('woff2');
+}
 
-        .btn-secondary {
-            background: var(--color-gray-200);
-            color: var(--color-text);
-        }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-        .btn-secondary:hover:not(:disabled) {
-            background: var(--color-gray-300);
-        }
+body {
+  font-family: var(--font-family-base);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  touch-action: manipulation;
+}
 
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+.game-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-16);
+  gap: var(--space-16);
+}
 
-        .sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+.game-header {
+  text-align: center;
+  padding-bottom: var(--space-16);
+}
 
-        .panel {
-            background: var(--color-surface);
-            border: 2px solid var(--color-primary);
-            border-radius: 8px;
-            padding: 20px;
-        }
+.game-header h1 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-8);
+}
 
-        .panel-title {
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: var(--color-primary);
-            margin: 0 0 15px 0;
-            letter-spacing: 1px;
-        }
+.game-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
 
-        .stat {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            font-size: 14px;
-        }
+.canvas-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-16);
+}
 
-        .stat-label {
-            color: var(--color-slate-500);
-        }
+#gameCanvas {
+  background-color: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-base);
+  box-shadow: var(--shadow-md);
+  display: block;
+  touch-action: none;
+}
 
-        .stat-value {
-            font-weight: 600;
-            font-size: 16px;
-            color: var(--color-text);
-        }
+.mobile-controls {
+  display: none;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-12);
+  width: 100%;
+  max-width: 400px;
+}
 
-        .energy-bar {
-            width: 100%;
-            height: 24px;
-            background: var(--color-gray-200);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 8px;
-        }
+.control-btn {
+  background: var(--color-primary);
+  color: var(--color-btn-primary-text);
+  border: none;
+  border-radius: var(--radius-base);
+  padding: var(--space-16);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all 150ms ease;
+  touch-action: manipulation;
+  user-select: none;
+  min-height: 44px;
+}
 
-        .energy-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--color-teal-500), var(--color-teal-300));
-            width: 0%;
-            transition: width 300ms ease;
-        }
+.control-btn:active {
+  background: var(--color-primary-active);
+  transform: scale(0.95);
+}
 
-        .energy-bar.low .energy-bar-fill {
-            background: linear-gradient(90deg, var(--color-red-400), var(--color-orange-400));
-        }
+.control-btn.rotate {
+  grid-column: 2;
+}
 
-        .treasure-code {
-            background: linear-gradient(135deg, rgba(50, 184, 198, 0.1), rgba(33, 128, 141, 0.1));
-            border: 2px dashed var(--color-primary);
-            border-radius: 6px;
-            padding: 16px;
-            text-align: center;
-            display: none;
-        }
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
 
-        .treasure-code.visible {
-            display: block;
-        }
+.info-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-16);
+  box-shadow: var(--shadow-sm);
+}
 
-        .treasure-code-label {
-            font-size: 12px;
-            text-transform: uppercase;
-            color: var(--color-slate-500);
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }
+.info-card h2 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-12);
+}
 
-        .treasure-code-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--color-primary);
-            font-family: monospace;
-            word-break: break-all;
-        }
+.info-card p {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-8);
+}
 
-        .instructions {
-            background: rgba(50, 184, 198, 0.05);
-            border-left: 4px solid var(--color-primary);
-            padding: 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            line-height: 1.6;
-            color: var(--color-slate-500);
-        }
+.info-value {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
 
-        .instructions strong {
-            color: var(--color-text);
-        }
+.energy-bar {
+  width: 100%;
+  height: 24px;
+  background-color: var(--color-secondary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-top: var(--space-8);
+}
 
-        .next-piece {
-            background: #222;
-            border: 2px solid var(--color-gray-300);
-            border-radius: 4px;
-            width: 100%;
-            height: 80px;
-            margin-top: 8px;
-        }
+.energy-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-teal-400));
+  transition: width 300ms ease;
+  border-radius: var(--radius-full);
+}
 
-        .level-progress {
-            margin-top: 12px;
-        }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-24);
+  background: var(--color-primary);
+  color: var(--color-btn-primary-text);
+  border: none;
+  border-radius: var(--radius-base);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all 150ms ease;
+  width: 100%;
+}
 
-        .level-bar {
-            width: 100%;
-            height: 4px;
-            background: var(--color-gray-200);
-            border-radius: 2px;
-            overflow: hidden;
-            margin-top: 6px;
-        }
+.btn:hover {
+  background: var(--color-primary-hover);
+}
 
-        .level-bar-fill {
-            height: 100%;
-            background: var(--color-primary);
-            width: 0%;
-            transition: width 200ms ease;
-        }
+.btn:active {
+  background: var(--color-primary-active);
+}
 
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --color-background: var(--color-charcoal-700);
-                --color-surface: var(--color-charcoal-800);
-                --color-text: var(--color-gray-200);
-            }
-        }
+.btn-secondary {
+  background: var(--color-secondary);
+  color: var(--color-text);
+}
+
+.btn-secondary:hover {
+  background: var(--color-secondary-hover);
+}
+
+.controls-info {
+  background-color: var(--color-bg-1);
+  border-radius: var(--radius-base);
+  padding: var(--space-12);
+  font-size: var(--font-size-sm);
+}
+
+.controls-info h3 {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-8);
+}
+
+.controls-info ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.controls-info li {
+  padding: var(--space-4) 0;
+  color: var(--color-text-secondary);
+}
+
+.treasure-code {
+  background: linear-gradient(135deg, var(--color-bg-3), var(--color-bg-1));
+  border: 2px solid var(--color-success);
+  padding: var(--space-16);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  animation: glow 2s ease-in-out infinite;
+}
+
+.treasure-code h3 {
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--space-8);
+  color: var(--color-success);
+}
+
+.treasure-code code {
+  display: block;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-mono);
+  background: var(--color-surface);
+  padding: var(--space-12);
+  border-radius: var(--radius-base);
+  margin-top: var(--space-8);
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(var(--color-teal-300-rgb), 0.3); }
+  50% { box-shadow: 0 0 40px rgba(var(--color-teal-300-rgb), 0.6); }
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Tablet and Desktop */
+@media (min-width: 768px) {
+  .game-content {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  
+  .canvas-wrapper {
+    flex: 1;
+    max-width: 600px;
+  }
+  
+  .sidebar {
+    flex: 0 0 300px;
+  }
+}
+
+/* Mobile specific */
+@media (max-width: 767px) {
+  .mobile-controls {
+    display: grid;
+  }
+  
+  .game-header h1 {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .game-container {
+    padding: var(--space-8);
+  }
+}
+
+/* Small mobile optimization */
+@media (max-width: 400px) {
+  .game-container {
+    padding: var(--space-4);
+  }
+  
+  .mobile-controls {
+    gap: var(--space-8);
+  }
+  
+  .control-btn {
+    padding: var(--space-12);
+    font-size: var(--font-size-base);
+  }
+}
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>⚡ Energy Tetris Hunt</h1>
-
-        <div class="game-area">
-            <div class="game-board">
-                <canvas id="tetrisCanvas" width="300" height="600"></canvas>
-            </div>
-
-            <div class="controls">
-                <button class="btn btn-primary" id="startBtn" onclick="toggleGame()">Start Game</button>
-                <button class="btn btn-secondary" id="pauseBtn" onclick="togglePause()" disabled>Pause</button>
-                <button class="btn btn-secondary" onclick="resetGame()">Reset</button>
-            </div>
-
-            <div class="instructions">
-                <strong>Controls:</strong><br>
-                ← → Move | ↓ Drop | Space Rotate<br>
-                <strong>Challenge:</strong> Reach 5000+ points to unlock the treasure code!
-            </div>
-        </div>
-
-        <div class="sidebar">
-            <div class="panel">
-                <div class="panel-title">📊 Score Board</div>
-                <div class="stat">
-                    <span class="stat-label">Score</span>
-                    <span class="stat-value" id="scoreDisplay">0</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">Level</span>
-                    <span class="stat-value" id="levelDisplay">1</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">Lines</span>
-                    <span class="stat-value" id="linesDisplay">0</span>
-                </div>
-            </div>
-
-            <div class="panel">
-                <div class="panel-title">⚡ Energy Meter</div>
-                <div class="stat">
-                    <span class="stat-label">Energy</span>
-                    <span class="stat-value" id="energyDisplay">100%</span>
-                </div>
-                <div class="energy-bar" id="energyBar">
-                    <div class="energy-bar-fill" id="energyBarFill" style="width: 100%;"></div>
-                </div>
-                <div class="stat" style="margin-top: 12px; font-size: 12px;">
-                    <span class="stat-label">Power Multiplier</span>
-                    <span class="stat-value" id="multiplierDisplay">1x</span>
-                </div>
-            </div>
-
-            <div class="panel">
-                <div class="panel-title">📦 Next Piece</div>
-                <canvas id="nextCanvas" class="next-piece"></canvas>
-            </div>
-
-            <div class="treasure-code" id="treasureCode">
-                <div class="treasure-code-label">🎯 Treasure Code Unlocked!</div>
-                <div class="treasure-code-value" id="treasureCodeValue">-</div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Game constants
-        const GRID_WIDTH = 10;
-        const GRID_HEIGHT = 20;
-        const BLOCK_SIZE = 30;
-        const ENERGY_THRESHOLD = 5000;
-        const ENERGY_LOSS_PER_FRAME = 0.1;
-
-        // Canvas setup
-        const canvas = document.getElementById('tetrisCanvas');
-        const ctx = canvas.getContext('2d');
-        const nextCanvas = document.getElementById('nextCanvas');
-        const nextCtx = nextCanvas.getContext('2d');
-
-        // Game state
-        let gameRunning = false;
-        let gamePaused = false;
-        let score = 0;
-        let lines = 0;
-        let level = 1;
-        let energy = 100;
-        let gameGrid = Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(0));
-
-        // Piece shapes (tetrominoes)
-        const SHAPES = [
-            [[1, 1, 1, 1]], // I
-            [[1, 1], [1, 1]], // O
-            [[0, 1, 1], [1, 1, 0]], // S
-            [[1, 1, 0], [0, 1, 1]], // Z
-            [[1, 0, 0], [1, 1, 1]], // J
-            [[0, 0, 1], [1, 1, 1]], // L
-            [[0, 1, 0], [1, 1, 1]] // T
-        ];
-
-        const COLORS = [
-            '#FF6B6B', // Red - I
-            '#4ECDC4', // Teal - O
-            '#45B7D1', // Blue - S
-            '#96CEB4', // Green - Z
-            '#FFEAA7', // Yellow - J
-            '#DDA15E', // Orange - L
-            '#BC6C25'  // Brown - T
-        ];
-
-        let currentPiece = null;
-        let nextPiece = null;
-
-        // Treasure code generation (based on score)
-        function generateTreasureCode() {
-            const words = ['PHOENIX', 'VAULT', 'ENERGY', 'TRADER', 'QUEST', 'LEGEND', 'STORM', 'BEACON'];
-            const numbers = Math.floor(score / 100).toString().padStart(4, '0');
-            const randomWord = words[Math.floor(Math.random() * words.length)];
-            return `${randomWord}-${numbers}`;
-        }
-
-        // Piece class
-        class Tetromino {
-            constructor(shape = null, color = null) {
-                const index = shape ? SHAPES.indexOf(shape) : Math.floor(Math.random() * SHAPES.length);
-                this.shape = shape || SHAPES[index];
-                this.color = color || COLORS[index];
-                this.x = Math.floor(GRID_WIDTH / 2) - 1;
-                this.y = 0;
-                this.rotation = 0;
-            }
-
-            rotate() {
-                const rotated = this.shape[0].map((_, i) =>
-                    this.shape.map(row => row[i]).reverse()
-                );
-                this.shape = rotated;
-            }
-
-            move(dx, dy) {
-                this.x += dx;
-                this.y += dy;
-            }
-        }
-
-        function spawnPiece() {
-            if (!nextPiece) {
-                nextPiece = new Tetromino();
-            }
-            currentPiece = nextPiece;
-            nextPiece = new Tetromino();
-            currentPiece.x = Math.floor(GRID_WIDTH / 2) - 1;
-            currentPiece.y = 0;
-            drawNextPiece();
-        }
-
-        function isColliding(piece, offsetX = 0, offsetY = 0) {
-            for (let row = 0; row < piece.shape.length; row++) {
-                for (let col = 0; col < piece.shape[row].length; col++) {
-                    if (piece.shape[row][col] === 0) continue;
-
-                    const newX = piece.x + col + offsetX;
-                    const newY = piece.y + row + offsetY;
-
-                    if (newX < 0 || newX >= GRID_WIDTH || newY >= GRID_HEIGHT) {
-                        return true;
-                    }
-                    if (newY >= 0 && gameGrid[newY][newX] !== 0) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        function mergePiece() {
-            for (let row = 0; row < currentPiece.shape.length; row++) {
-                for (let col = 0; col < currentPiece.shape[row].length; col++) {
-                    if (currentPiece.shape[row][col] === 1) {
-                        const y = currentPiece.y + row;
-                        const x = currentPiece.x + col;
-                        if (y >= 0 && y < GRID_HEIGHT && x >= 0 && x < GRID_WIDTH) {
-                            gameGrid[y][x] = currentPiece.color;
-                        }
-                    }
-                }
-            }
-        }
-
-        function clearLines() {
-            let clearedLines = 0;
-            for (let row = GRID_HEIGHT - 1; row >= 0; row--) {
-                if (gameGrid[row].every(cell => cell !== 0)) {
-                    gameGrid.splice(row, 1);
-                    gameGrid.unshift(Array(GRID_WIDTH).fill(0));
-                    clearedLines++;
-                    row++;
-                }
-            }
-
-            if (clearedLines > 0) {
-                lines += clearedLines;
-                // Energy trading mechanic: cleared lines give energy bonus
-                energy = Math.min(100, energy + clearedLines * 5);
-                // Score multiplier based on energy
-                const multiplier = Math.floor(energy / 20);
-                score += (clearedLines * 100) * multiplier;
-                checkLevelUp();
-            }
-
-            return clearedLines > 0;
-        }
-
-        function checkLevelUp() {
-            const newLevel = Math.floor(score / 1000) + 1;
-            if (newLevel > level) {
-                level = newLevel;
-            }
-        }
-
-        function draw() {
-            // Clear canvas
-            ctx.fillStyle = '#222';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Draw grid
-            ctx.strokeStyle = '#444';
-            ctx.lineWidth = 0.5;
-            for (let i = 0; i <= GRID_HEIGHT; i++) {
-                ctx.beginPath();
-                ctx.moveTo(0, i * BLOCK_SIZE);
-                ctx.lineTo(GRID_WIDTH * BLOCK_SIZE, i * BLOCK_SIZE);
-                ctx.stroke();
-            }
-            for (let i = 0; i <= GRID_WIDTH; i++) {
-                ctx.beginPath();
-                ctx.moveTo(i * BLOCK_SIZE, 0);
-                ctx.lineTo(i * BLOCK_SIZE, GRID_HEIGHT * BLOCK_SIZE);
-                ctx.stroke();
-            }
-
-            // Draw placed blocks
-            for (let row = 0; row < GRID_HEIGHT; row++) {
-                for (let col = 0; col < GRID_WIDTH; col++) {
-                    if (gameGrid[row][col] !== 0) {
-                        ctx.fillStyle = gameGrid[row][col];
-                        ctx.fillRect(col * BLOCK_SIZE, row * BLOCK_SIZE, BLOCK_SIZE - 1, BLOCK_SIZE - 1);
-                    }
-                }
-            }
-
-            // Draw current piece
-            if (currentPiece) {
-                ctx.fillStyle = currentPiece.color;
-                for (let row = 0; row < currentPiece.shape.length; row++) {
-                    for (let col = 0; col < currentPiece.shape[row].length; col++) {
-                        if (currentPiece.shape[row][col] === 1) {
-                            const x = (currentPiece.x + col) * BLOCK_SIZE;
-                            const y = (currentPiece.y + row) * BLOCK_SIZE;
-                            ctx.fillRect(x, y, BLOCK_SIZE - 1, BLOCK_SIZE - 1);
-                        }
-                    }
-                }
-            }
-
-            updateUI();
-        }
-
-        function drawNextPiece() {
-            nextCtx.fillStyle = '#222';
-            nextCtx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
-            
-            if (nextPiece) {
-                nextCtx.fillStyle = nextPiece.color;
-                const offsetX = (nextCanvas.width / 30 - nextPiece.shape[0].length) / 2;
-                const offsetY = (nextCanvas.height / 30 - nextPiece.shape.length) / 2;
+    <div class="game-container">
+        <header class="game-header">
+            <h1>🎮 Tetris</h1>
+        </header>
+        
+        <main class="game-content">
+            <div class="canvas-wrapper">
+                <canvas id="gameCanvas"></canvas>
                 
-                for (let row = 0; row < nextPiece.shape.length; row++) {
-                    for (let col = 0; col < nextPiece.shape[row].length; col++) {
-                        if (nextPiece.shape[row][col] === 1) {
-                            const x = (offsetX + col) * 30;
-                            const y = (offsetY + row) * 30;
-                            nextCtx.fillRect(x, y, 28, 28);
-                        }
-                    }
-                }
-            }
-        }
-
-        function updateUI() {
-            document.getElementById('scoreDisplay').textContent = score.toLocaleString();
-            document.getElementById('levelDisplay').textContent = level;
-            document.getElementById('linesDisplay').textContent = lines;
+                <!-- Mobile Touch Controls -->
+                <div class="mobile-controls">
+                    <button class="control-btn" id="leftBtn">◀</button>
+                    <button class="control-btn rotate" id="rotateBtn">🔄</button>
+                    <button class="control-btn" id="rightBtn">▶</button>
+                    <button class="control-btn" id="downBtn" style="grid-column: span 3;">⬇ Drop</button>
+                </div>
+            </div>
             
-            energy = Math.max(0, energy - ENERGY_LOSS_PER_FRAME);
-            document.getElementById('energyDisplay').textContent = Math.round(energy) + '%';
-            document.getElementById('energyBarFill').style.width = energy + '%';
-            
-            const energyBar = document.getElementById('energyBar');
-            if (energy < 30) {
-                energyBar.classList.add('low');
-            } else {
-                energyBar.classList.remove('low');
-            }
-
-            const multiplier = Math.floor(energy / 20);
-            document.getElementById('multiplierDisplay').textContent = multiplier + 'x';
-
-            // Check treasure code unlock
-            if (score >= ENERGY_THRESHOLD && !document.getElementById('treasureCode').classList.contains('visible')) {
-                document.getElementById('treasureCode').classList.add('visible');
-                document.getElementById('treasureCodeValue').textContent = generateTreasureCode();
-            }
-        }
-
-        function gameLoop() {
-            if (!gameRunning) return;
-
-            if (!gamePaused) {
-                if (!currentPiece) {
-                    spawnPiece();
-                }
-
-                if (!isColliding(currentPiece, 0, 1)) {
-                    currentPiece.y++;
-                } else {
-                    mergePiece();
-                    if (clearLines()) {
-                        // Energy trading bonus for combos
-                    }
-                    spawnPiece();
-
-                    // Check game over
-                    if (isColliding(currentPiece, 0, 0)) {
-                        gameRunning = false;
-                        document.getElementById('startBtn').textContent = 'Game Over - Restart';
-                        document.getElementById('pauseBtn').disabled = true;
-                    }
-                }
-            }
-
-            draw();
-            setTimeout(gameLoop, Math.max(100, 500 - (level - 1) * 30));
-        }
-
-        function toggleGame() {
-            if (!gameRunning) {
-                gameRunning = true;
-                gamePaused = false;
-                document.getElementById('startBtn').textContent = 'Playing...';
-                document.getElementById('startBtn').disabled = true;
-                document.getElementById('pauseBtn').disabled = false;
-                gameLoop();
-            }
-        }
-
-        function togglePause() {
-            if (gameRunning) {
-                gamePaused = !gamePaused;
-                document.getElementById('pauseBtn').textContent = gamePaused ? 'Resume' : 'Pause';
-            }
-        }
-
-        function resetGame() {
-            gameRunning = false;
-            gamePaused = false;
-            score = 0;
-            lines = 0;
-            level = 1;
-            energy = 100;
-            gameGrid = Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(0));
-            currentPiece = null;
-            nextPiece = null;
-            document.getElementById('startBtn').textContent = 'Start Game';
-            document.getElementById('startBtn').disabled = false;
-            document.getElementById('pauseBtn').textContent = 'Pause';
-            document.getElementById('pauseBtn').disabled = true;
-            document.getElementById('treasureCode').classList.remove('visible');
-            draw();
-        }
-
-        // Keyboard controls
-        document.addEventListener('keydown', (e) => {
-            if (!gameRunning || gamePaused || !currentPiece) return;
-
-            switch (e.key) {
-                case 'ArrowLeft':
-                    if (!isColliding(currentPiece, -1, 0)) {
-                        currentPiece.x--;
-                    }
-                    break;
-                case 'ArrowRight':
-                    if (!isColliding(currentPiece, 1, 0)) {
-                        currentPiece.x++;
-                    }
-                    break;
-                case 'ArrowDown':
-                    if (!isColliding(currentPiece, 0, 1)) {
-                        currentPiece.y++;
-                        score += 10;
-                    }
-                    break;
-                case ' ':
-                    e.preventDefault();
-                    currentPiece.rotate();
-                    if (isColliding(currentPiece, 0, 0)) {
-                        currentPiece.rotate();
-                        currentPiece.rotate();
-                        currentPiece.rotate();
-                    }
-                    break;
-            }
-            draw();
-        });
-
-        // Initial draw
-        draw();
-    </script>
+            <aside class="sidebar">
+                <!-- Score Card -->
+                <div class="info-card">
+                    <h2>Score</h2>
+                    <div class="info-value" id="scoreDisplay">0</div>
+                </div>
+                
+                <!-- Level Card -->
+                <div class="info-card">
+                    <h2>Level</h2>
+                    <div class="info-value" id="levelDisplay">1</div>
+                </div>
+                
+                <!-- Energy Card -->
+                <div class="info-card">
+                    <h2>Energy</h2>
+                    <p id="energyDisplay">0 / 5000</p>
+                    <div class="energy-bar">
+                        <div class="energy-fill" id="energyFill" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <!-- Treasure Code (Hidden Initially) -->
+                <div class="info-card treasure-code hidden" id="treasureCard">
+                    <h3>🏆 Treasure Unlocked!</h3>
+                    <code id="treasureCode"></code>
+                </div>
+                
+                <!-- Controls -->
+                <button class="btn" id="startBtn">Start Game</button>
+                <button class="btn btn-secondary" id="pauseBtn">Pause</button>
+                
+                <!-- Controls Info -->
+                <div class="controls-info">
+                    <h3>Controls</h3>
+                    <ul id="controlsList">
+                        <li>← → : Move</li>
+                        <li>↑ : Rotate</li>
+                        <li>↓ : Soft Drop</li>
+                        <li>Space : Hard Drop</li>
+                    </ul>
+                </div>
+            </aside>
+        </main>
+    </div>
+    
+    <script src="app.js"></script>
 </body>
 </html>
